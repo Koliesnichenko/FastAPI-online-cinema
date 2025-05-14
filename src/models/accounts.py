@@ -2,6 +2,7 @@ import enum
 from datetime import datetime, date, timedelta, timezone
 from typing import List
 
+from pydantic import validators
 from sqlalchemy import (
     Boolean,
     Optional,
@@ -103,7 +104,7 @@ class User(Base):
         Set the user's password after validating its strength and hashing it.
         """
         validators.validate_password_strength(raw_password)
-        self._hashed_password = hash_password(raw_password)
+        self.hashed_password = hash_password(raw_password)
 
     def verify_password(self, raw_password: str) -> bool:
         """
@@ -137,7 +138,7 @@ class UserProfile(Base):
     avatar: Mapped[Optional[str]] = mapped_column(String(255))
     gender: Mapped[Optional[GenderEnum]] = mapped_column(Enum(GenderEnum))
     date_of_birth: Mapped[Optional[date]] = mapped_column(Date)
-    info: [Optional[str]] = mapped_column(Text)
+    info: Mapped[Optional[str]] = mapped_column(Text)
 
     user_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"),
